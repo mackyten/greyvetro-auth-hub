@@ -1,0 +1,79 @@
+realm: greyvetro
+enabled: true
+displayName: Greyvetro
+displayNameHtml: "<strong>Greyvetro</strong>"
+
+# Require TLS for all requests outside localhost
+sslRequired: external
+
+# Disable self-registration — users are provisioned by admins only
+registrationAllowed: false
+registrationEmailAsUsername: true
+loginWithEmailAllowed: true
+duplicateEmailsAllowed: false
+resetPasswordAllowed: true
+editUsernameAllowed: false
+
+# Token lifespans
+accessTokenLifespan: 300           # 5 minutes
+ssoSessionIdleTimeout: 1800        # 30 minutes idle
+ssoSessionMaxLifespan: 36000       # 10 hours absolute max
+refreshTokenMaxReuse: 0
+revokeRefreshToken: true
+
+# Password policy
+passwordPolicy: >-
+  length(12) and
+  upperCase(1) and
+  lowerCase(1) and
+  digits(1) and
+  specialChars(1) and
+  notUsername and
+  notEmail
+
+# Brute-force protection
+bruteForceProtected: true
+permanentLockout: false
+maxFailureWaitSeconds: 900
+minimumQuickLoginWaitSeconds: 60
+waitIncrementSeconds: 60
+quickLoginCheckMilliSeconds: 1000
+maxDeltaTimeSeconds: 43200
+failureFactor: 5
+
+# Localization
+internationalizationEnabled: true
+supportedLocales:
+  - en
+defaultLocale: en
+
+# Themes — swap in custom theme names once branding assets are ready
+loginTheme: keycloak
+emailTheme: keycloak
+accountTheme: keycloak
+adminTheme: keycloak
+
+# SMTP — values injected at deploy time via Keycloak admin UI or separate Config CLI run
+smtpServer: {}
+
+# Roles provisioned here; clients and users are added in later phases
+roles:
+  realm:
+    - name: SuperAdmin
+      description: Full administrative access across all tenants
+    - name: OrgManager
+      description: Manages users and settings within a single organisation
+    - name: Auditor
+      description: Read-only access to audit logs and reports
+    - name: Doctor
+      description: Licensed physician access in EHR module
+    - name: Nurse
+      description: Nursing staff access in EHR module
+    - name: MedicalClerk
+      description: Administrative medical staff in EHR module
+    - name: Cashier
+      description: POS terminal operator
+    - name: ShiftLead
+      description: POS shift supervisor
+    - name: StoreManager
+      description: POS store manager

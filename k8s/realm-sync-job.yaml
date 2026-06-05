@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-config-cli
+  namespace: greyvetro
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: keycloak-config-cli
+          image: adorsys/keycloak-config-cli:latest-26.0
+          env:
+            - name: KEYCLOAK_URL
+              value: http://keycloak.greyvetro.svc.cluster.local
+            - name: KEYCLOAK_USER
+              value: admin
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-admin-credentials
+                  key: admin-password
+            - name: IMPORT_FILES_LOCATIONS
+              value: /config/*
+            - name: IMPORT_MANAGED_REALM
+              value: "full"
+          volumeMounts:
+            - name: realm-config
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+      volumes:
+        - name: realm-config
+          configMap:
+            name: realm-config

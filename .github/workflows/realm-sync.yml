@@ -1,0 +1,58 @@
+name: Sync Keycloak Realm
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - realm-config/**
+
+env:
+  NAMESPACE: greyvetro
+
+jobs:
+  sync-realm:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AKS credentials
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
+          creds: ${{ secrets.AKS_CREDENTIALS }}
+
+      - name: Wait for Keycloak to be ready
+        run: |
+          kubectl wait deployment/keycloak \
+            --for=condition=Available \
+            --timeout=300s \
+            --namespace=$NAMESPACE
+
+      - name: Upload realm config as ConfigMap
+        run: |
+          kubectl create configmap realm-config \
+            --from-file=realm-config/ \
+            --namespace=$NAMESPACE \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Delete previous sync job if exists
+        run: kubectl delete job keycloak-config-cli --namespace=$NAMESPACE --ignore-not-found
+
+      - name: Run Keycloak Config CLI
+        run: kubectl apply -f k8s/realm-sync-job.yaml
+
+      - name: Wait for sync to complete
+        run: |
+          kubectl wait job/keycloak-config-cli \
+            --for=condition=Complete \
+            --timeout=120s \
+            --namespace=$NAMESPACE
+
+      - name: Print sync logs
+        if: always()
+        run: |
+          kubectl logs job/keycloak-config-cli \
+            --namespace=$NAMESPACE \
+            --ignore-errors

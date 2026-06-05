@@ -1,0 +1,14 @@
+# Local dev overrides — never commit these
+helm/values-local.yaml
+k8s/secrets/*.yaml
+
+# Environment files
+.env
+.env.local
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

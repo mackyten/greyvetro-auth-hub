@@ -1,0 +1,54 @@
+replicaCount: 1
+
+auth:
+  adminUser: admin
+  existingSecret: keycloak-admin-credentials
+  passwordSecretKey: admin-password
+
+# DEV: set to true for staging/prod
+production: false
+
+# Needed when Keycloak sits behind an nginx reverse proxy
+proxy: edge
+
+# Disable Bitnami's bundled PostgreSQL — using CloudNativePG instead
+postgresql:
+  enabled: false
+
+externalDatabase:
+  host: keycloak-db-pooler-rw.greyvetro.svc.cluster.local
+  port: 5432
+  database: keycloak
+  user: keycloak
+  existingSecret: keycloak-db-credentials
+  existingSecretPasswordKey: password
+
+# Infinispan distributed cache with Kubernetes pod discovery (KUBE_PING)
+extraEnvVars:
+  - name: KC_CACHE
+    value: ispn
+  - name: KC_CACHE_STACK
+    value: kubernetes
+  - name: JAVA_OPTS_APPEND
+    value: "-Djgroups.dns.query=keycloak-headless.greyvetro.svc.cluster.local"
+
+serviceAccount:
+  create: false
+  name: keycloak
+
+service:
+  type: ClusterIP
+  ports:
+    http: 80
+
+# Ingress is managed in k8s/ingress/ — not via Helm
+ingress:
+  enabled: false
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 768Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi

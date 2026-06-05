@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak
+  namespace: greyvetro
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    # Restrict admin console to localhost only in DEV.
+    # Replace with your office IP range for staging/prod.
+    nginx.ingress.kubernetes.io/satisfy: "any"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - auth.greyvetro.local
+      secretName: keycloak-tls
+  rules:
+    - host: auth.greyvetro.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 80
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keycloak-tls
+  namespace: greyvetro
+spec:
+  secretName: keycloak-tls
+  issuerRef:
+    name: greyvetro-ca-issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - auth.greyvetro.local
