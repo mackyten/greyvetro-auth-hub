@@ -1,0 +1,183 @@
+{
+  "id": "greyvetro",
+  "realm": "greyvetro",
+  "enabled": true,
+  "displayName": "Greyvetro",
+  "displayNameHtml": "<strong>Greyvetro</strong>",
+
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "registrationEmailAsUsername": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "refreshTokenMaxReuse": 0,
+  "revokeRefreshToken": true,
+
+  "passwordPolicy": "length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername(undefined) and notEmail(undefined)",
+
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+
+  "internationalizationEnabled": true,
+  "supportedLocales": ["en"],
+  "defaultLocale": "en",
+
+  "loginTheme": "keycloak",
+  "emailTheme": "keycloak",
+  "accountTheme": "keycloak",
+  "adminTheme": "keycloak",
+
+  "roles": {
+    "realm": [
+      { "name": "SuperAdmin",    "description": "Full administrative access across all tenants" },
+      { "name": "OrgManager",    "description": "Manages users and settings within a single organisation" },
+      { "name": "Auditor",       "description": "Read-only access to audit logs and reports" },
+      { "name": "Doctor",        "description": "Licensed physician access in EHR module" },
+      { "name": "Nurse",         "description": "Nursing staff access in EHR module" },
+      { "name": "MedicalClerk",  "description": "Administrative medical staff in EHR module" },
+      { "name": "Cashier",       "description": "POS terminal operator" },
+      { "name": "ShiftLead",     "description": "POS shift supervisor" },
+      { "name": "StoreManager",  "description": "POS store manager" }
+    ]
+  },
+
+  "clients": [
+    {
+      "clientId": "admin-portal",
+      "name": "Greyvetro Admin Portal",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-secret-admin-portal",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "defaultClientScopes": ["web-origins", "profile", "roles", "email"]
+    },
+    {
+      "clientId": "pos-core",
+      "name": "Greyvetro POS Core",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-secret-pos-core",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": ["http://localhost:3002/*"],
+      "webOrigins": ["http://localhost:3002"],
+      "defaultClientScopes": ["web-origins", "profile", "roles", "email"]
+    },
+    {
+      "clientId": "ehr-access",
+      "name": "Greyvetro EHR Access",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-secret-ehr-access",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": ["http://localhost:3001/*"],
+      "webOrigins": ["http://localhost:3001"],
+      "defaultClientScopes": ["web-origins", "profile", "roles", "email"]
+    },
+    {
+      "clientId": "conversational-agent",
+      "name": "Greyvetro Conversational Agent",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-secret-conv-agent",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002"
+      ],
+      "defaultClientScopes": ["web-origins", "profile", "roles", "email"]
+    }
+  ],
+
+  "users": [
+    {
+      "username": "superadmin",
+      "email": "superadmin@greyvetro.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Super",
+      "lastName": "Admin",
+      "credentials": [{ "type": "password", "value": "SuperAdm@Local1", "temporary": false }],
+      "realmRoles": ["SuperAdmin"]
+    },
+    {
+      "username": "storemgr",
+      "email": "storemgr@greyvetro.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Sam",
+      "lastName": "StoreManager",
+      "credentials": [{ "type": "password", "value": "StoreM@Local1", "temporary": false }],
+      "realmRoles": ["StoreManager", "ShiftLead"]
+    },
+    {
+      "username": "cashier",
+      "email": "cashier@greyvetro.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Casey",
+      "lastName": "Cashier",
+      "credentials": [{ "type": "password", "value": "Cashier@Local1", "temporary": false }],
+      "realmRoles": ["Cashier"]
+    },
+    {
+      "username": "doctor",
+      "email": "doctor@greyvetro.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Diana",
+      "lastName": "Doctor",
+      "credentials": [{ "type": "password", "value": "Doctor@Local1!", "temporary": false }],
+      "realmRoles": ["Doctor"]
+    },
+    {
+      "username": "nurse",
+      "email": "nurse@greyvetro.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Nancy",
+      "lastName": "Nurse",
+      "credentials": [{ "type": "password", "value": "Nurse@Local1!", "temporary": false }],
+      "realmRoles": ["Nurse"]
+    }
+  ]
+}
