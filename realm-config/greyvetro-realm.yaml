@@ -56,6 +56,181 @@ adminTheme: keycloak
 # SMTP — values injected at deploy time via Keycloak admin UI or separate Config CLI run
 smtpServer: {}
 
+## ---------------------------------------------------------------------------
+## CLIENTS
+## ---------------------------------------------------------------------------
+# All four app clients are confidential (Auth Code + PKCE).
+# Using confidential over public so the backends can call the token introspection
+# endpoint, which requires a client secret.
+# DEV secrets are hardcoded here — safe for localhost only; never commit real secrets.
+# ---------------------------------------------------------------------------
+clients:
+  # --- POS Core ---
+  - clientId: pos-core
+    name: Greyvetro POS Core
+    enabled: true
+    protocol: openid-connect
+    publicClient: false                        # confidential — backend needs introspect
+    clientAuthenticatorType: client-secret
+    secret: dev-secret-pos-core
+    standardFlowEnabled: true                  # Auth Code flow (browser login)
+    directAccessGrantsEnabled: false
+    serviceAccountsEnabled: false
+    attributes:
+      pkce.code.challenge.method: S256
+    redirectUris:
+      - http://localhost:3002/*
+    webOrigins:
+      - http://localhost:3002
+    defaultClientScopes:
+      - web-origins
+      - profile
+      - roles
+      - email
+
+  # --- Admin Portal ---
+  - clientId: admin-portal
+    name: Greyvetro Admin Portal
+    enabled: true
+    protocol: openid-connect
+    publicClient: false
+    clientAuthenticatorType: client-secret
+    secret: dev-secret-admin-portal
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: false
+    serviceAccountsEnabled: false
+    attributes:
+      pkce.code.challenge.method: S256
+    redirectUris:
+      - http://localhost:3000/*
+    webOrigins:
+      - http://localhost:3000
+    defaultClientScopes:
+      - web-origins
+      - profile
+      - roles
+      - email
+
+  # --- EHR Access ---
+  - clientId: ehr-access
+    name: Greyvetro EHR Access
+    enabled: true
+    protocol: openid-connect
+    publicClient: false
+    clientAuthenticatorType: client-secret
+    secret: dev-secret-ehr-access
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: false
+    serviceAccountsEnabled: false
+    attributes:
+      pkce.code.challenge.method: S256
+    redirectUris:
+      - http://localhost:3001/*
+    webOrigins:
+      - http://localhost:3001
+    defaultClientScopes:
+      - web-origins
+      - profile
+      - roles
+      - email
+
+  # --- Conversational Agent ---
+  # Bearer-only in the long run (token exchange); registered as confidential for now
+  # so it can be extended in Phase 6 without a new client registration.
+  - clientId: conversational-agent
+    name: Greyvetro Conversational Agent
+    enabled: true
+    protocol: openid-connect
+    publicClient: false
+    clientAuthenticatorType: client-secret
+    secret: dev-secret-conv-agent
+    standardFlowEnabled: false
+    directAccessGrantsEnabled: false
+    serviceAccountsEnabled: false
+    webOrigins:
+      - http://localhost:3000
+      - http://localhost:3001
+      - http://localhost:3002
+
+## ---------------------------------------------------------------------------
+## TEST USERS  (local dev only — never add real credentials here)
+## Passwords satisfy the realm policy: 12+ chars, upper, lower, digit, special.
+## ---------------------------------------------------------------------------
+users:
+  # POS — cashier
+  - username: cashier
+    email: cashier@greyvetro.local
+    enabled: true
+    emailVerified: true
+    firstName: Casey
+    lastName: Cashier
+    credentials:
+      - type: password
+        value: "Cashier@Local1"
+        temporary: false
+    realmRoles:
+      - Cashier
+
+  # POS — shift lead / store manager
+  - username: storemgr
+    email: storemgr@greyvetro.local
+    enabled: true
+    emailVerified: true
+    firstName: Sam
+    lastName: StoreManager
+    credentials:
+      - type: password
+        value: "StoreM@Local1"
+        temporary: false
+    realmRoles:
+      - StoreManager
+      - ShiftLead
+
+  # Admin Portal — super admin
+  - username: superadmin
+    email: superadmin@greyvetro.local
+    enabled: true
+    emailVerified: true
+    firstName: Super
+    lastName: Admin
+    credentials:
+      - type: password
+        value: "SuperAdm@Local1"
+        temporary: false
+    realmRoles:
+      - SuperAdmin
+
+  # EHR — doctor
+  - username: doctor
+    email: doctor@greyvetro.local
+    enabled: true
+    emailVerified: true
+    firstName: Diana
+    lastName: Doctor
+    credentials:
+      - type: password
+        value: "Doctor@Local1!"
+        temporary: false
+    realmRoles:
+      - Doctor
+
+  # EHR — nurse
+  - username: nurse
+    email: nurse@greyvetro.local
+    enabled: true
+    emailVerified: true
+    firstName: Nancy
+    lastName: Nurse
+    credentials:
+      - type: password
+        value: "Nurse@Local1!"
+        temporary: false
+    realmRoles:
+      - Nurse
+
+## ---------------------------------------------------------------------------
+## ROLES
+## ---------------------------------------------------------------------------
 # Roles provisioned here; clients and users are added in later phases
 roles:
   realm:
