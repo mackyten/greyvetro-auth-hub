@@ -134,6 +134,29 @@ clients:
       - roles
       - email
 
+  # --- Studio ---
+  - clientId: greyvetro-studio
+    name: Greyvetro Studio
+    enabled: true
+    protocol: openid-connect
+    publicClient: false                        # confidential — backend needs introspect
+    clientAuthenticatorType: client-secret
+    secret: dev-secret-greyvetro-studio
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: false
+    serviceAccountsEnabled: false
+    attributes:
+      pkce.code.challenge.method: S256
+    redirectUris:
+      - http://localhost:3003/*
+    webOrigins:
+      - http://localhost:3003
+    defaultClientScopes:
+      - web-origins
+      - profile
+      - roles
+      - email
+
   # --- Conversational Agent ---
   # Bearer-only in the long run (token exchange); registered as confidential for now
   # so it can be extended in Phase 6 without a new client registration.
@@ -214,6 +237,20 @@ users:
     realmRoles:
       - Doctor
 
+  # Studio — standard user
+  - username: studio-tester
+    email: studio-tester@greyvetro.local
+    enabled: true
+    emailVerified: true
+    firstName: Terry
+    lastName: Tester
+    credentials:
+      - type: password
+        value: "StudioTester@1"
+        temporary: false
+    realmRoles:
+      - studio-user
+
   # EHR — nurse
   - username: nurse
     email: nurse@greyvetro.local
@@ -252,3 +289,7 @@ roles:
       description: POS shift supervisor
     - name: StoreManager
       description: POS store manager
+    - name: studio-user
+      description: Can generate audio and manage personal cloned voices
+    - name: studio-admin
+      description: Can manage all users' cloned voices in Studio service

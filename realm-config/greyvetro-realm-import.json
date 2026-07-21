@@ -49,7 +49,9 @@
       { "name": "MedicalClerk",  "description": "Administrative medical staff in EHR module" },
       { "name": "Cashier",       "description": "POS terminal operator" },
       { "name": "ShiftLead",     "description": "POS shift supervisor" },
-      { "name": "StoreManager",  "description": "POS store manager" }
+      { "name": "StoreManager",  "description": "POS store manager" },
+      { "name": "studio-user",   "description": "Can generate audio and manage personal cloned voices" },
+      { "name": "studio-admin",  "description": "Can manage all users' cloned voices in Studio service" }
     ]
   },
 
@@ -105,6 +107,24 @@
       },
       "redirectUris": ["http://localhost:3001/*"],
       "webOrigins": ["http://localhost:3001"],
+      "defaultClientScopes": ["web-origins", "profile", "roles", "email"]
+    },
+    {
+      "clientId": "greyvetro-studio",
+      "name": "Greyvetro Studio",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-secret-greyvetro-studio",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": ["http://localhost:3003/*"],
+      "webOrigins": ["http://localhost:3003"],
       "defaultClientScopes": ["web-origins", "profile", "roles", "email"]
     },
     {
@@ -167,6 +187,16 @@
       "lastName": "Doctor",
       "credentials": [{ "type": "password", "value": "Doctor@Local1!", "temporary": false }],
       "realmRoles": ["Doctor"]
+    },
+    {
+      "username": "studio-tester",
+      "email": "studio-tester@greyvetro.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Terry",
+      "lastName": "Tester",
+      "credentials": [{ "type": "password", "value": "StudioTester@1", "temporary": false }],
+      "realmRoles": ["studio-user"]
     },
     {
       "username": "nurse",
